@@ -7,10 +7,7 @@ import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.hasChildCount
-import androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom
-import androidx.test.espresso.matcher.ViewMatchers.withClassName
-import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.android.architecture.blueprints.todoapp.BaseTest
 import com.example.android.architecture.blueprints.todoapp.R
@@ -48,6 +45,23 @@ class TasksActivityTest : BaseTest() {
      */
     @Test
     fun addNewTODO_verifyItIsOnCompletedList() {
+        // Add a new TO-DO
+        val taskTitle = "Swim class"
+        val taskDescription = "Go to swim class today 6pm"
+
+        onView(isAssignableFrom(FloatingActionButton::class.java)).perform(ViewActions.click())
+        onView(withId(R.id.add_task_title_edit_text)).perform(ViewActions.typeText(taskTitle))
+        onView(withId(R.id.add_task_description_edit_text)).perform(ViewActions.typeText(taskDescription))
+        onView(withId(R.id.save_task_fab)).perform(ViewActions.click())
+        // Mark it completed
+        onView(withId(R.id.complete_checkbox)).perform(ViewActions.click())
+        // Verify it is in the list of completed tasks
+        onView(withId(R.id.menu_filter)).perform(ViewActions.click())
+        onView(withText("Completed")).perform(ViewActions.click())
+        onView(withId(R.id.title_text)).check(matches(allOf(
+                isDisplayed(),
+                withText(taskTitle)
+        )))
 
     }
 
