@@ -33,14 +33,14 @@ class TasksActivityTest : BaseTest() {
     fun cleanup() {
         // Clean up any item on list. Mark it completed
         try {
-            onView(allOf(withId(R.id.complete_checkbox))).perform(ViewActions.click())
+            onView(allOf(withId(R.id.complete_checkbox), not(isChecked()))).perform(ViewActions.click())
         } catch (e: Exception) {
             // In case the test already deletes its item
             Log.i("TaskActivityTest", "Item already deleted by test ")
+        } finally {
+            Espresso.openContextualActionModeOverflowMenu()
+            onView(withText("Clear completed")).perform(click())
         }
-        Espresso.openContextualActionModeOverflowMenu()
-        onView(withText("Clear completed")).perform(click())
-
     }
     /**
      * Add a new TO-DO that provides the title and description. Verify it is shown in the TO-DO list.
@@ -84,8 +84,7 @@ class TasksActivityTest : BaseTest() {
         onView(withText("Completed")).perform(ViewActions.click())
 
         onView(withId(R.id.filtering_text)).check(matches(withText("Completed Tasks")))
-        onView(allOf(withId(R.id.complete_checkbox), hasSibling(withText(taskTitle))))
-                .check(matches(isChecked()))
+        onView(allOf(withId(R.id.title_text), withText(taskTitle))).check(matches(isDisplayed()))
     }
 
     /**
@@ -110,6 +109,37 @@ class TasksActivityTest : BaseTest() {
         onView(allOf(withId(R.id.title_text), withText("Storeless testing"))).check(ViewAssertions.matches(isDisplayed()))
     }
 
+    /**
+     * add a to-do and mark it as completed. Verify that the checkbox of the completed to-do is checked.
+     */
+    @Test
+    fun addNewTODO_markItCompleted_verifyCheckboxIsChecked() {
+        // Add a new TO-DO
+        val taskTitle = "Research on polyrithms"
+        val taskDescription = "Research on different drum solos"
+
+        onView(isAssignableFrom(FloatingActionButton::class.java)).perform(ViewActions.click())
+        onView(withId(R.id.add_task_title_edit_text)).perform(ViewActions.typeText(taskTitle), ViewActions.closeSoftKeyboard())
+        onView(withId(R.id.add_task_description_edit_text)).perform(ViewActions.typeText(taskDescription), ViewActions.closeSoftKeyboard())
+        onView(withId(R.id.save_task_fab)).perform(ViewActions.click())
+        // Mark it completed
+        onView(allOf(
+                withId(R.id.complete_checkbox),
+                hasSibling(withText(taskTitle))
+        )).perform(ViewActions.click())
+        // Verify it is in the list of completed tasks
+        onView(withId(R.id.menu_filter)).perform(ViewActions.click())
+        onView(withText("Completed")).perform(ViewActions.click())
+
+        onView(withId(R.id.filtering_text)).check(matches(withText("Completed Tasks")))
+        onView(allOf(withId(R.id.complete_checkbox), hasSibling(withText(taskTitle))))
+                .check(matches(isChecked()))
+    }
+
+    /**
+     * Add a new to-do, open the to-do details by clicking on it, and delete it by clicking the delete task button.
+     * Verify the the all to-dos list is empty .
+     */
     @Test
     fun addNewTODO_removeIt_itDoesNotAppearOnScreen() {
         // Add a new TO-DO
