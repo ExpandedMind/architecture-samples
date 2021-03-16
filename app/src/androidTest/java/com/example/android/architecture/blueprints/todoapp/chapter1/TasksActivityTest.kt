@@ -1,9 +1,13 @@
 package com.example.android.architecture.blueprints.todoapp.chapter1
 
 import android.media.MediaPlayer
+import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.*
+import androidx.test.espresso.EspressoException
 import androidx.test.espresso.ViewAssertion
+import androidx.test.espresso.ViewInteraction
 import androidx.test.espresso.action.ViewActions
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions
@@ -18,12 +22,26 @@ import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Matcher
+import org.junit.After
 import org.junit.Test
 import org.junit.runner.RunWith
 
 @RunWith(AndroidJUnit4::class)
 class TasksActivityTest : BaseTest() {
 
+    @After
+    fun cleanup() {
+        // Clean up any item on list. Mark it completed
+        try {
+            onView(allOf(withId(R.id.complete_checkbox))).perform(ViewActions.click())
+        } catch (e: Exception) {
+            // In case the test already deletes its item
+            Log.i("TaskActivityTest", "Item already deleted by test ")
+        }
+        Espresso.openContextualActionModeOverflowMenu()
+        onView(withText("Clear completed")).perform(click())
+
+    }
     /**
      * Add a new TO-DO that provides the title and description. Verify it is shown in the TO-DO list.
      */
@@ -90,6 +108,25 @@ class TasksActivityTest : BaseTest() {
         onView(withId(R.id.save_task_fab)).perform(click())
         // Verify modification
         onView(allOf(withId(R.id.title_text), withText("Storeless testing"))).check(ViewAssertions.matches(isDisplayed()))
+    }
+
+    @Test
+    fun addNewTODO_removeIt_itDoesNotAppearOnScreen() {
+        // Add a new TO-DO
+        val taskTitle = "gihub setup"
+        val taskDescription = "Enable SaaS for ios-core repo"
+
+        onView(isAssignableFrom(FloatingActionButton::class.java)).perform(ViewActions.click())
+        onView(withId(R.id.add_task_title_edit_text)).perform(ViewActions.typeText(taskTitle), ViewActions.closeSoftKeyboard())
+        onView(withId(R.id.add_task_description_edit_text)).perform(ViewActions.typeText(taskDescription), ViewActions.closeSoftKeyboard())
+        onView(withId(R.id.save_task_fab)).perform(ViewActions.click())
+
+        // Open detailed task and delete it
+        onView(allOf(withText(taskTitle), withId(R.id.title_text))).perform(click())
+        onView(withId(R.id.menu_delete)).perform(click())
+
+        // Check task is no longer on the list
+        onView(withId(R.id.no_tasks_icon)).check(matches(isDisplayed()))
     }
 
 }
