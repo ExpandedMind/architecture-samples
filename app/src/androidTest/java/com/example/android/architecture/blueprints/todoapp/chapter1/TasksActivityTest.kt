@@ -2,12 +2,10 @@ package com.example.android.architecture.blueprints.todoapp.chapter1
 
 import android.media.MediaPlayer
 import androidx.recyclerview.widget.RecyclerView
-import androidx.test.espresso.Espresso.onData
-import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.*
 import androidx.test.espresso.ViewAssertion
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.action.ViewActions.click
-import androidx.test.espresso.action.ViewActions.replaceText
+import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers
@@ -18,6 +16,7 @@ import com.example.android.architecture.blueprints.todoapp.R
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.allOf
+import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Matcher
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -34,7 +33,7 @@ class TasksActivityTest : BaseTest() {
         val taskDescription = " Practice rotated paradidles"
 
         onView(isAssignableFrom(FloatingActionButton::class.java)).perform(ViewActions.click())
-        onView(withId(R.id.add_task_title_edit_text)).perform(ViewActions.typeText(taskTitle))
+        onView(withId(R.id.add_task_title_edit_text)).perform(ViewActions.typeText(taskTitle), ViewActions.closeSoftKeyboard())
         onView(withId(R.id.add_task_description_edit_text))
                 .perform(ViewActions.typeText(taskDescription))
 
@@ -54,8 +53,8 @@ class TasksActivityTest : BaseTest() {
         val taskDescription = "Go to swim class today 6pm"
 
         onView(isAssignableFrom(FloatingActionButton::class.java)).perform(ViewActions.click())
-        onView(withId(R.id.add_task_title_edit_text)).perform(ViewActions.typeText(taskTitle))
-        onView(withId(R.id.add_task_description_edit_text)).perform(ViewActions.typeText(taskDescription))
+        onView(withId(R.id.add_task_title_edit_text)).perform(ViewActions.typeText(taskTitle), ViewActions.closeSoftKeyboard())
+        onView(withId(R.id.add_task_description_edit_text)).perform(ViewActions.typeText(taskDescription), ViewActions.closeSoftKeyboard())
         onView(withId(R.id.save_task_fab)).perform(ViewActions.click())
         // Mark it completed
         onView(allOf(
@@ -65,8 +64,10 @@ class TasksActivityTest : BaseTest() {
         // Verify it is in the list of completed tasks
         onView(withId(R.id.menu_filter)).perform(ViewActions.click())
         onView(withText("Completed")).perform(ViewActions.click())
-        onView(allOf(withId(R.id.title_text), withText(taskTitle))).check(matches(allOf(isCompletelyDisplayed(), withText(taskTitle))))
 
+        onView(withId(R.id.filtering_text)).check(matches(withText("Completed Tasks")))
+        onView(allOf(withId(R.id.complete_checkbox), hasSibling(withText(taskTitle))))
+                .check(matches(isChecked()))
     }
 
     /**
@@ -79,8 +80,8 @@ class TasksActivityTest : BaseTest() {
         val taskDescription = "Regression test Storeless experience"
 
         onView(isAssignableFrom(FloatingActionButton::class.java)).perform(ViewActions.click())
-        onView(withId(R.id.add_task_title_edit_text)).perform(ViewActions.typeText(taskTitle))
-        onView(withId(R.id.add_task_description_edit_text)).perform(ViewActions.typeText(taskDescription))
+        onView(withId(R.id.add_task_title_edit_text)).perform(ViewActions.typeText(taskTitle), ViewActions.closeSoftKeyboard())
+        onView(withId(R.id.add_task_description_edit_text)).perform(ViewActions.typeText(taskDescription), ViewActions.closeSoftKeyboard())
         onView(withId(R.id.save_task_fab)).perform(ViewActions.click())
         // Edit it
         onView(allOf(withId(R.id.title_text), withText(taskTitle))).perform(click())
