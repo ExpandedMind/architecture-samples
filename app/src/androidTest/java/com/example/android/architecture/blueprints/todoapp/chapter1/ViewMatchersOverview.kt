@@ -4,6 +4,7 @@ import android.view.inputmethod.EditorInfo
 import android.widget.CheckBox
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.LayoutMatchers.hasEllipsizedText
 import androidx.test.espresso.matcher.LayoutMatchers.hasMultilineText
 import androidx.test.espresso.matcher.ViewMatchers
@@ -47,7 +48,7 @@ class ViewMatchersOverview {
 
     @Test
     fun input() {
-        onView(supportsInputMethods())
+        onView(supportsInputMethods()) // https://github.com/android/testing-samples.git
         onView(hasImeAction(EditorInfo.IME_ACTION_SEND))
     }
 
@@ -63,4 +64,5 @@ class ViewMatchersOverview {
         onView(hasEllipsizedText())
         onView(hasMultilineText())
     }
+
 }

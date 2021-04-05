@@ -168,6 +168,9 @@ dependencies {
     androidTestImplementation "androidx.appcompat:appcompat:$appCompatVersion"
     androidTestImplementation "com.google.android.material:material:$materialVersion"
 
+    // ConditionalWatcher dependency
+    androidTestImplementation "com.azimolabs.conditionwatcher:conditionwatcher:0.2"
+
     // Kotlin
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlinVersion"
     implementation "androidx.fragment:fragment-ktx:$fragmentKtxVersion"
