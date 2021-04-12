@@ -3,6 +3,7 @@ package com.example.android.architecture.blueprints.todoapp.chapter2
 import android.view.View
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.GeneralLocation
+import androidx.test.espresso.action.ViewActions.swipeDown
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import com.example.android.architecture.blueprints.todoapp.BaseTest
 import com.example.android.architecture.blueprints.todoapp.R
@@ -12,6 +13,14 @@ import org.junit.Test
 class CustomActionsTest : BaseTest() {
 
     val customSwipeManager: CustomSwipeActions = CustomSwipeActions()
+
+    @Test
+    fun useStandardSwipeDownToPullRefresh() {
+        Utils.generateToDos(12)
+        onView(withId(R.id.tasks_list)).perform(swipeDown())
+        Thread.sleep(25000)
+    }
+
 
     @Test
     fun useCustomSwipeDuration() {

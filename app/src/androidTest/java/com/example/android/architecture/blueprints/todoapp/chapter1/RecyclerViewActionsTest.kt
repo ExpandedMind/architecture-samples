@@ -3,18 +3,18 @@ package com.example.android.architecture.blueprints.todoapp.chapter1
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions
+import androidx.test.espresso.PerformException
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.scrollTo
+import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition
 import androidx.test.espresso.contrib.RecyclerViewActions.scrollToPosition
-import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.filters.LargeTest
 import com.example.android.architecture.blueprints.todoapp.BaseTest
 import com.example.android.architecture.blueprints.todoapp.R
-import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.example.android.architecture.blueprints.todoapp.chapter2.CompleteToDoViewAction
+import org.hamcrest.CoreMatchers
 import org.junit.Test
 
 @LargeTest
@@ -47,5 +47,21 @@ class RecyclerViewActionsTest : BaseTest() {
         Espresso.pressBack()
     }
 
+    @Test
+    fun completeTodoTask_byUsingCustomRecyclerViewAction() {
+        Utils.generateToDos(3)
 
+        onView(withId(R.id.tasks_list)).perform(CompleteToDoViewAction("Task # 2"))
+
+        onView(CoreMatchers.allOf(withId(R.id.complete_checkbox), hasSibling(withText("Task # 2"))))
+                .check(matches(isChecked()))
+    }
+
+
+    @Test(expected = PerformException::class)
+    fun completeTodoTask_givenErroneousTitle_throwsException() {
+        Utils.generateToDos(3)
+
+        onView(withId(R.id.tasks_list)).perform(CompleteToDoViewAction("Task # 2 sfdf"))
+    }
 }
